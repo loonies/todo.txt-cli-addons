@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+
+# zenof
+#
+# Todo.txt filter with easy to follow output
+#
+# Copyright (C) 2015-2016 Miodrag Tokić
+# Released under the MIT License.
+
+set -o errexit
+set -o nounset
+
+readonly VERSION="0.1.0-rc.1"
+
+# Defaults
+export TODOTXT_META="t"
+
+export COLOR_ID=$NONE
+export COLOR_META=$NONE
+
+# Import config values
+source "$TODOTXT_CFG_FILE"
+
+# Define reset color code
+readonly DEFAULT='\\033[0m'
+
+# Positional anchor is not included!
+readonly REGEX_ID="[0-9]{2,}"
+readonly REGEX_PRI="\(([A-Z])\)"
+readonly REGEX_DONE="x"
+readonly REGEX_CONT="(\s+)(@\S+)"
+readonly REGEX_PROJ="(\s+)(\+\S+)"
+readonly REGEX_META="(\s+)(($TODOTXT_META):\S+)"
+readonly REGEX_LINE="^.*$"
+
+while read -r line; do
+    [[ "$line" =~ ^${REGEX_ID} ]] && id=${BASH_REMATCH[0]} || id=""
+    [[ "$line" =~ $REGEX_PRI ]] && pri=PRI_${BASH_REMATCH[1]} || pri="PRI_X"
+
+    # The following modifications are performed (in order listed):
+    # - Removes ID; Moves ID to the end of line if task is not done
+    # - Colors priority
+    # - Colors context
+    # - Colors project
+    # - Colors metadata
+    # - Colors done line
+    line=$(echo "$line" | sed -r \
+        -e "s/^$REGEX_ID\s//; /^[^${REGEX_DONE}]/s/$/ ${COLOR_ID}#$id${DEFAULT}/" \
+        -e "s/$REGEX_PRI/${!pri}\0${DEFAULT}/" \
+        -e "s/$REGEX_CONT/\1${COLOR_CONTEXT}\2${DEFAULT}/g" \
+        -e "s/$REGEX_PROJ/\1${COLOR_PROJECT}\2${DEFAULT}/g" \
+        -e "s/$REGEX_META/\1${COLOR_META}\2${DEFAULT}/g" \
+        -e "/^${REGEX_DONE}/s/$REGEX_LINE/${COLOR_DONE}&${DEFAULT}/" \
+    )
+
+    echo -e "$line"
+done
