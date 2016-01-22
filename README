@@ -1,0 +1,37 @@
+Todo.txt CLI add-ons
+====================
+
+Description
+-----------
+
+Various add-ons for the Todo.txt CLI.
+
+
+Installation
+------------
+
+Consult the Todo.txt CLI documentation.
+
+
+Contributing
+------------
+
+Open an issue or send a pull request on the Github
+(http://github.com/loonies/todo.txt-cli-addons).
+
+
+Authors
+-------
+
+Maintainer:
+
+ - Miodrag Tokić
+
+
+Copyright
+---------
+
+Copyright (C) 2015-2016 Miodrag Tokić.
+
+Released under the MIT License. See the LICENSE file for details.
+
